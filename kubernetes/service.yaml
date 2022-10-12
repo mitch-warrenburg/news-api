@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: news-api-service
+  namespace: portfolio
+  labels:
+    app: news-api
+  annotations:
+    cloud.google.com/neg: '{"ingress": true}'
+spec:
+  type: NodePort
+  selector:
+    app: news-api
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080

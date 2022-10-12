@@ -1,0 +1,38 @@
+spring:
+  application.name: news-api
+  main.banner-mode: off
+  output.ansi.enabled: always
+  jackson:
+    date-format: yyyy-MM-dd
+    time-zone: America/Los_Angeles
+    property-naming-strategy: SNAKE_CASE
+    serialization:
+      write-dates-as-timestamps: false
+  cloud.gcp:
+    core.enabled: false
+    firestore.enabled: false
+    secretmanager.enabled: false
+
+springdoc:
+  swagger-ui:
+    filter: true
+    syntaxHighlight.theme: nord
+
+feign:
+  compression:
+    response:
+      enabled: true
+    request:
+      enabled: true
+  client.config:
+    NewsClient:
+      defaultRequestHeaders:
+        loggerLevel: full
+        x-api-key: "${news-catcher-api.api-key}"
+
+news-catcher-api:
+  path: /v2
+  api-key: "${NEWS_CATCHER_API_KEY}"
+  url: https://api.newscatcherapi.com
+
+server.forward-headers-strategy: framework

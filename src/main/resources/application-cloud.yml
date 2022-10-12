@@ -1,0 +1,8 @@
+spring.cloud.gcp:
+  core.enabled: false
+  firestore.enabled: false
+  secretmanager.enabled: true
+  project-id: warrenburg-portfolio
+
+news-catcher-api:
+  api-key: "${sm://NEWS_CATCHER_API_KEY}"

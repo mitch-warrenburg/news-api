@@ -1,0 +1,46 @@
+steps:
+  - name: gcr.io/cloud-builders/docker
+    id: Build Image
+    entrypoint: 'bash'
+    args: [ '-c', 'docker build -t $_IMAGE:$COMMIT_SHA -t $_IMAGE:latest --build-arg ENCODED_GOOGLE_APPLICATION_CREDENTIALS="$$ENCODED_GOOGLE_APPLICATION_CREDENTIALS" .' ]
+    secretEnv:
+      - ENCODED_GOOGLE_APPLICATION_CREDENTIALS
+  - name: gcr.io/cloud-builders/docker
+    id: Push Image
+    args: [ push, '$_IMAGE:$COMMIT_SHA' ]
+  - name: gcr.io/cloud-builders/gke-deploy
+    id: Prepare GKE deployment
+    args:
+      - prepare
+      - '--filename=$_K8S_PATH'
+      - '--image=$_IMAGE:$COMMIT_SHA'
+      - '--app=$_APP'
+      - '--version=$COMMIT_SHA'
+      - '--namespace=$_NAMESPACE'
+      - '--annotation=$_K8S_ANNOTATIONS,gcb-build-id=$BUILD_ID'
+      - '--create-application-cr'
+      - '--output=output'
+  - name: gcr.io/cloud-builders/gke-deploy
+    id: Apply GKE deployment
+    args:
+      - apply
+      - '--filename=output/expanded'
+      - '--cluster=$_CLUSTER'
+      - '--location=$_REGION'
+      - '--namespace=$_NAMESPACE'
+images:
+  - '$_IMAGE:$COMMIT_SHA'
+options:
+  substitutionOption: ALLOW_LOOSE
+substitutions:
+  _IMAGE: gcr.io/warrenburg-portfolio/news-api
+  _K8S_PATH: kubernetes/
+  _APP: news-api
+  _REGION: us-central1
+  _NAMESPACE: portfolio
+  _CLUSTER: portfolio
+  _OUTPUT_BUCKET_PATH: warrenburg-portfolio_cloudbuild/deploy
+availableSecrets:
+  secretManager:
+    - versionName: projects/warrenburg-portfolio/secrets/GCP_CREDS/versions/latest
+      env: ENCODED_GOOGLE_APPLICATION_CREDENTIALS

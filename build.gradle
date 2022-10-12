@@ -1,0 +1,68 @@
+plugins {
+    id 'java'
+    id 'com.diffplug.spotless' version '6.11.0'
+    id 'com.adarshr.test-logger' version '3.2.0'
+    id 'org.springframework.boot' version '2.7.4'
+    id 'io.spring.dependency-management' version '1.0.14.RELEASE'
+}
+
+group = 'com.labelbox.news'
+version = '0.0.1'
+sourceCompatibility = '11'
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "com.google.cloud:spring-cloud-gcp-dependencies:3.3.0"
+        mavenBom 'org.springframework.cloud:spring-cloud-dependencies:2021.0.4'
+    }
+}
+
+dependencies {
+    compileOnly 'org.projectlombok:lombok'
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+
+    annotationProcessor 'org.projectlombok:lombok'
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+
+    implementation 'commons-io:commons-io:2.11.0'
+    implementation 'org.springdoc:springdoc-openapi-ui:1.6.11'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-cache'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'com.google.cloud:spring-cloud-gcp-starter-secretmanager'
+    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+testlogger {
+    theme 'mocha'
+    slowThreshold 5_000
+    showSimpleNames true
+}
+
+spotless {
+    java {
+        googleJavaFormat('1.8')
+        target 'src/main/java/**/*.java'
+        toggleOffOn()
+        endWithNewline()
+        removeUnusedImports()
+        trimTrailingWhitespace()
+    }
+}

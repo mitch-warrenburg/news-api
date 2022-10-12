@@ -1,0 +1,17 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: news-api-ingress
+  namespace: portfolio
+  annotations:
+    kubernetes.io/ingress.class: "gce"
+    kubernetes.io/ingress.allow-http: "true"
+    networking.gke.io/managed-certificates: "news-api-cert"
+    networking.gke.io/v1beta1.FrontendConfig: "news-api-frontend"
+    kubernetes.io/ingress.global-static-ip-name: "news-api-ip"
+  labels:
+    app: news-api
+spec:
+  backend:
+    servicePort: 8080
+    serviceName: news-api-service

@@ -1,0 +1,19 @@
+apiVersion: autoscaling/v2beta1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: news-api-autoscaler
+  namespace: portfolio
+  labels:
+    app: news-api
+spec:
+  scaleTargetRef:
+    kind: Deployment
+    name: news-api
+    apiVersion: apps/v1
+  minReplicas: 1
+  maxReplicas: 3
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        targetAverageUtilization: 80

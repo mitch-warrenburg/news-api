@@ -1,0 +1,10 @@
+apiVersion: networking.gke.io/v1beta1
+kind: FrontendConfig
+metadata:
+  name: news-api-frontend
+  namespace: portfolio
+  labels:
+    app: news-api
+spec:
+  redirectToHttps:
+    enabled: true

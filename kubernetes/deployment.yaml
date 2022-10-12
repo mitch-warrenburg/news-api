@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: news-api
+  namespace: portfolio
+  labels:
+    app: news-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: news-api
+  template:
+    metadata:
+      labels:
+        app: news-api
+    spec:
+      containers:
+        - name: news-api-container
+          image: gcr.io/warrenburg-portfolio/news-api:latest
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              port: 8080
+              path: /actuator/health
+          livenessProbe:
+            periodSeconds: 15
+            httpGet:
+              port: 8080
+              path: /actuator/health
+          ports:
+            - containerPort: 8080
+            - containerPort: 443
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: cloud
